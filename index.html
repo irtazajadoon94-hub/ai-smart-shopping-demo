@@ -1,0 +1,985 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Smart Shopping - Pakistan's First AI Shopping Assistant</title>
+    <meta name="description" content="Compare prices across Daraz, Amazon, OLX, AliExpress & more. Save ₨10,000-50,000 on every purchase with AI-powered shopping assistant.">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            overflow-x: hidden;
+        }
+        
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 80px 20px 60px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg width="100" height="100" xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="50" r="2" fill="white" opacity="0.1"/></svg>');
+            animation: float 20s linear infinite;
+        }
+        
+        @keyframes float {
+            from { transform: translateY(0); }
+            to { transform: translateY(-100px); }
+        }
+        
+        .hero-content {
+            position: relative;
+            z-index: 1;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .logo {
+            font-size: 2.5em;
+            font-weight: bold;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+        
+        .tagline {
+            font-size: 1.5em;
+            margin-bottom: 15px;
+            opacity: 0.95;
+        }
+        
+        .subtitle {
+            font-size: 1.1em;
+            margin-bottom: 40px;
+            opacity: 0.9;
+        }
+        
+        /* Language Toggle */
+        .lang-toggle {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(255,255,255,0.2);
+            border: 2px solid white;
+            color: white;
+            padding: 8px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+            z-index: 10;
+        }
+        
+        .lang-toggle:hover {
+            background: white;
+            color: #667eea;
+            transform: scale(1.05);
+        }
+        
+        /* Search Section */
+        .search-section {
+            max-width: 800px;
+            margin: 0 auto;
+            position: relative;
+        }
+        
+        .search-box {
+            display: flex;
+            gap: 10px;
+            background: white;
+            padding: 8px;
+            border-radius: 50px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            transition: all 0.3s;
+        }
+        
+        .search-box:focus-within {
+            box-shadow: 0 15px 50px rgba(0,0,0,0.3);
+            transform: translateY(-2px);
+        }
+        
+        .search-input {
+            flex: 1;
+            border: none;
+            padding: 15px 25px;
+            font-size: 1.1em;
+            outline: none;
+            border-radius: 50px;
+        }
+        
+        .search-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            border-radius: 50px;
+            font-size: 1.1em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .search-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+        
+        .search-suggestions {
+            margin-top: 20px;
+            font-size: 0.9em;
+            opacity: 0.9;
+        }
+        
+        .suggestion-chip {
+            display: inline-block;
+            background: rgba(255,255,255,0.2);
+            padding: 8px 16px;
+            border-radius: 20px;
+            margin: 5px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .suggestion-chip:hover {
+            background: white;
+            color: #667eea;
+            transform: translateY(-2px);
+        }
+        
+        /* Stats Section */
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 30px;
+            max-width: 1000px;
+            margin: 40px auto 0;
+            padding: 0 20px;
+        }
+        
+        .stat-card {
+            background: rgba(255,255,255,0.15);
+            padding: 25px;
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.2);
+            transition: all 0.3s;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-5px);
+            background: rgba(255,255,255,0.25);
+        }
+        
+        .stat-number {
+            font-size: 2.5em;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .stat-label {
+            font-size: 1em;
+            opacity: 0.9;
+        }
+        
+        /* Results Section */
+        .results-section {
+            max-width: 1200px;
+            margin: 60px auto;
+            padding: 0 20px;
+            display: none;
+        }
+        
+        .results-section.active {
+            display: block;
+            animation: fadeIn 0.5s;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .results-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        
+        .results-header h2 {
+            font-size: 2em;
+            color: #333;
+            margin-bottom: 10px;
+        }
+        
+        .search-time {
+            color: #666;
+            font-size: 0.9em;
+        }
+        
+        /* Product Cards */
+        .products-grid {
+            display: grid;
+            gap: 25px;
+        }
+        
+        .product-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            transition: all 0.3s;
+            border: 2px solid transparent;
+        }
+        
+        .product-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+        }
+        
+        .product-card.best-deal {
+            border-color: #10b981;
+            background: linear-gradient(to right, #f0fdf4, white);
+        }
+        
+        .best-deal-badge {
+            display: inline-block;
+            background: #10b981;
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+        
+        .product-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 20px;
+            gap: 15px;
+        }
+        
+        .product-info h3 {
+            font-size: 1.3em;
+            color: #333;
+            margin-bottom: 8px;
+        }
+        
+        .platform-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: #f3f4f6;
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 0.9em;
+            font-weight: 600;
+            color: #666;
+        }
+        
+        .condition-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 6px;
+            font-size: 0.85em;
+            font-weight: bold;
+            margin-top: 5px;
+        }
+        
+        .condition-new {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+        
+        .condition-used {
+            background: #fef3c7;
+            color: #92400e;
+        }
+        
+        .price-section {
+            text-align: right;
+        }
+        
+        .price-main {
+            font-size: 2em;
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 5px;
+        }
+        
+        .price-details {
+            font-size: 0.85em;
+            color: #666;
+            line-height: 1.4;
+        }
+        
+        .savings {
+            color: #10b981;
+            font-weight: bold;
+            font-size: 1.1em;
+            margin-top: 5px;
+        }
+        
+        .product-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+            padding: 20px;
+            background: #f9fafb;
+            border-radius: 10px;
+        }
+        
+        .detail-item {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .detail-label {
+            font-size: 0.85em;
+            color: #666;
+            margin-bottom: 3px;
+        }
+        
+        .detail-value {
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .product-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
+        .btn {
+            flex: 1;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: none;
+            font-size: 1em;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+        
+        .btn-secondary {
+            background: white;
+            color: #667eea;
+            border: 2px solid #667eea;
+        }
+        
+        .btn-secondary:hover {
+            background: #667eea;
+            color: white;
+        }
+        
+        /* Unique Features Section */
+        .unique-features {
+            background: #f9fafb;
+            padding: 60px 20px;
+            margin-top: 60px;
+        }
+        
+        .section-title {
+            text-align: center;
+            font-size: 2.5em;
+            color: #333;
+            margin-bottom: 50px;
+        }
+        
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .feature-card {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+            transition: all 0.3s;
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.12);
+        }
+        
+        .feature-icon {
+            font-size: 3em;
+            margin-bottom: 20px;
+        }
+        
+        .feature-card h3 {
+            font-size: 1.5em;
+            color: #333;
+            margin-bottom: 15px;
+        }
+        
+        .feature-card p {
+            color: #666;
+            line-height: 1.8;
+        }
+        
+        /* Revenue Section */
+        .revenue-section {
+            max-width: 1200px;
+            margin: 60px auto;
+            padding: 60px 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 20px;
+            color: white;
+        }
+        
+        .revenue-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+            margin-top: 40px;
+        }
+        
+        .revenue-card {
+            background: rgba(255,255,255,0.15);
+            padding: 30px;
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+        
+        .revenue-card h3 {
+            font-size: 1.3em;
+            margin-bottom: 15px;
+        }
+        
+        .revenue-amount {
+            font-size: 2.5em;
+            font-weight: bold;
+            margin: 15px 0;
+        }
+        
+        /* Loading Animation */
+        .loading {
+            text-align: center;
+            padding: 60px 20px;
+            display: none;
+        }
+        
+        .loading.active {
+            display: block;
+        }
+        
+        .spinner {
+            border: 4px solid #f3f4f6;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero {
+                padding: 60px 15px 40px;
+            }
+            
+            .logo {
+                font-size: 2em;
+            }
+            
+            .tagline {
+                font-size: 1.2em;
+            }
+            
+            .search-box {
+                flex-direction: column;
+            }
+            
+            .search-btn {
+                width: 100%;
+            }
+            
+            .stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .product-header {
+                flex-direction: column;
+            }
+            
+            .price-section {
+                text-align: left;
+            }
+            
+            .product-actions {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Language Toggle -->
+    <button class="lang-toggle" onclick="toggleLanguage()">🌐 اردو</button>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-content">
+            <div class="logo">🛍️ AI Smart Shopping</div>
+            <div class="tagline" id="tagline">Pakistan's First AI Shopping Assistant</div>
+            <div class="subtitle" id="subtitle">Compare prices across 5+ platforms in 3 seconds. Save ₨10,000-50,000 on every purchase!</div>
+            
+            <!-- Search Box -->
+            <div class="search-section">
+                <div class="search-box">
+                    <input type="text" class="search-input" id="searchInput" placeholder="Search for iPhone, Laptop, TV, Furniture..." />
+                    <button class="search-btn" onclick="performSearch()">🔍 Search</button>
+                </div>
+                <div class="search-suggestions">
+                    <span class="suggestion-chip" onclick="quickSearch('iPhone 15 Pro')">iPhone 15 Pro</span>
+                    <span class="suggestion-chip" onclick="quickSearch('Gaming Laptop')">Gaming Laptop</span>
+                    <span class="suggestion-chip" onclick="quickSearch('Samsung TV')">Samsung TV</span>
+                </div>
+            </div>
+            
+            <!-- Stats -->
+            <div class="stats">
+                <div class="stat-card">
+                    <div class="stat-number">100+</div>
+                    <div class="stat-label">Beta Users</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">5+</div>
+                    <div class="stat-label">Platforms</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">₨2.4L</div>
+                    <div class="stat-label">Saved Today</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">3s</div>
+                    <div class="stat-label">Search Speed</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Loading -->
+    <div class="loading" id="loading">
+        <div class="spinner"></div>
+        <h3>🤖 AI is searching across 5 platforms...</h3>
+        <p>Analyzing prices, reviews, and calculating total costs...</p>
+    </div>
+
+    <!-- Results Section -->
+    <div class="results-section" id="results">
+        <div class="results-header">
+            <h2 id="resultsTitle">Search Results</h2>
+            <p class="search-time">⚡ Found in 2.3 seconds</p>
+        </div>
+        <div class="products-grid" id="productsGrid"></div>
+    </div>
+
+    <!-- Unique Features -->
+    <section class="unique-features">
+        <h2 class="section-title">🚀 Our Unique Features</h2>
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon">💰</div>
+                <h3>Total Cost Calculator</h3>
+                <p>See the REAL price including shipping, customs, and import duties. No hidden costs! Save ₨10,000-50,000 by knowing the actual total before buying.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🤖</div>
+                <h3>AI Review Analysis</h3>
+                <p>Our AI detects fake reviews and summarizes thousands of reviews in seconds. Know the real pros and cons before you buy. Trust score included!</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">💬</div>
+                <h3>Bargain Helper</h3>
+                <p>Get AI-generated negotiation messages for OLX sellers. Increase your chances of getting better deals. Works in Urdu and English!</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🆕</div>
+                <h3>New vs Used Detection</h3>
+                <p>Automatically identifies if products are new or used. Compare fairly and understand why prices differ. No more confusion!</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🔔</div>
+                <h3>Price Alerts</h3>
+                <p>Get notified when prices drop. Set your target price and we'll alert you instantly. Never miss a deal again!</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🌐</div>
+                <h3>Urdu + English</h3>
+                <p>Full support for Urdu and English. Search in your language, get results in your language. Made for Pakistan!</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Revenue Model -->
+    <section class="revenue-section">
+        <h2 class="section-title">💰 Revenue Model</h2>
+        <p style="text-align: center; font-size: 1.2em; margin-bottom: 20px;">3 Proven Income Streams</p>
+        <div class="revenue-grid">
+            <div class="revenue-card">
+                <h3>Affiliate Commissions</h3>
+                <div class="revenue-amount">₨75L</div>
+                <p>Earn 3-7% commission when users buy through our links. At 100,000 users with 30% conversion, we project ₨75 lakhs monthly.</p>
+            </div>
+            <div class="revenue-card">
+                <h3>Premium Subscriptions</h3>
+                <div class="revenue-amount">₨30L</div>
+                <p>₨99/month for unlimited searches, instant alerts, and no ads. 10% conversion = ₨30 lakhs monthly revenue.</p>
+            </div>
+            <div class="revenue-card">
+                <h3>Featured Listings</h3>
+                <div class="revenue-amount">₨15L</div>
+                <p>Sellers pay ₨15,000/month for top placement. 100 sellers = ₨15 lakhs monthly recurring revenue.</p>
+            </div>
+        </div>
+        <div style="text-align: center; margin-top: 40px;">
+            <h3 style="font-size: 2em;">Total Projected Revenue</h3>
+            <div style="font-size: 3.5em; font-weight: bold; margin: 20px 0;">₨1.2 CRORE/month</div>
+            <p style="font-size: 1.2em;">At 100,000 users (achievable in 12 months)</p>
+        </div>
+    </section>
+
+    <script>
+        // Sample product database
+        const products = {
+            'iphone 15 pro': [
+                {
+                    name: 'iPhone 15 Pro 256GB',
+                    platform: 'Daraz',
+                    price: 265000,
+                    condition: 'new',
+                    shipping: 0,
+                    warranty: '1 Year Official',
+                    delivery: '2-3 days',
+                    rating: 4.8,
+                    stock: 'In Stock'
+                },
+                {
+                    name: 'iPhone 15 Pro 256GB',
+                    platform: 'Amazon',
+                    price: 275000,
+                    condition: 'new',
+                    shipping: 5000,
+                    warranty: '1 Year International',
+                    delivery: '7-10 days',
+                    rating: 4.7,
+                    stock: 'In Stock'
+                },
+                {
+                    name: 'iPhone 15 Pro 256GB',
+                    platform: 'OLX',
+                    price: 220000,
+                    condition: 'used',
+                    shipping: 0,
+                    warranty: 'No Warranty',
+                    delivery: 'Meet in person',
+                    rating: 4.2,
+                    stock: 'Available'
+                },
+                {
+                    name: 'iPhone 15 Pro 256GB',
+                    platform: 'AliExpress',
+                    price: 255000,
+                    condition: 'new',
+                    shipping: 12000,
+                    customs: 44750,
+                    warranty: '1 Year Seller',
+                    delivery: '15-25 days',
+                    rating: 4.5,
+                    stock: 'In Stock'
+                }
+            ],
+            'gaming laptop': [
+                {
+                    name: 'HP Pavilion Gaming Laptop',
+                    platform: 'Daraz',
+                    price: 145000,
+                    condition: 'new',
+                    shipping: 0,
+                    warranty: '1 Year Official',
+                    delivery: '2-3 days',
+                    rating: 4.6,
+                    stock: 'In Stock'
+                },
+                {
+                    name: 'HP Pavilion Gaming (Used)',
+                    platform: 'OLX',
+                    price: 95000,
+                    condition: 'used',
+                    shipping: 0,
+                    warranty: 'No Warranty',
+                    delivery: 'Meet in person',
+                    rating: 4.0,
+                    stock: 'Available'
+                },
+                {
+                    name: 'HP Pavilion Gaming Laptop',
+                    platform: 'Amazon',
+                    price: 155000,
+                    condition: 'new',
+                    shipping: 8000,
+                    warranty: '1 Year International',
+                    delivery: '7-10 days',
+                    rating: 4.7,
+                    stock: 'In Stock'
+                }
+            ],
+            'samsung tv': [
+                {
+                    name: 'Samsung 65" QLED 4K TV',
+                    platform: 'Daraz',
+                    price: 185000,
+                    condition: 'new',
+                    shipping: 0,
+                    warranty: '2 Years Official',
+                    delivery: '3-5 days',
+                    rating: 4.8,
+                    stock: 'In Stock'
+                },
+                {
+                    name: 'Samsung 65" QLED (Used)',
+                    platform: 'OLX',
+                    price: 125000,
+                    condition: 'used',
+                    shipping: 0,
+                    warranty: 'No Warranty',
+                    delivery: 'Meet in person',
+                    rating: 4.1,
+                    stock: 'Available'
+                },
+                {
+                    name: 'Samsung 65" QLED 4K TV',
+                    platform: 'Telemart',
+                    price: 179000,
+                    condition: 'new',
+                    shipping: 2000,
+                    warranty: '2 Years Official',
+                    delivery: '2-4 days',
+                    rating: 4.7,
+                    stock: 'In Stock'
+                }
+            ]
+        };
+
+        let currentLang = 'en';
+
+        function toggleLanguage() {
+            currentLang = currentLang === 'en' ? 'ur' : 'en';
+            const btn = document.querySelector('.lang-toggle');
+            
+            if (currentLang === 'ur') {
+                btn.textContent = '🌐 English';
+                document.getElementById('tagline').textContent = 'پاکستان کا پہلا AI شاپنگ اسسٹنٹ';
+                document.getElementById('subtitle').textContent = '3 سیکنڈ میں 5+ پلیٹ فارمز کی قیمتوں کا موازنہ کریں۔ ہر خریداری پر ₨10,000-50,000 بچائیں!';
+                document.getElementById('searchInput').placeholder = 'iPhone، Laptop، TV، فرنیچر تلاش کریں...';
+            } else {
+                btn.textContent = '🌐 اردو';
+                document.getElementById('tagline').textContent = "Pakistan's First AI Shopping Assistant";
+                document.getElementById('subtitle').textContent = 'Compare prices across 5+ platforms in 3 seconds. Save ₨10,000-50,000 on every purchase!';
+                document.getElementById('searchInput').placeholder = 'Search for iPhone, Laptop, TV, Furniture...';
+            }
+        }
+
+        function quickSearch(query) {
+            document.getElementById('searchInput').value = query;
+            performSearch();
+        }
+
+        function performSearch() {
+            const query = document.getElementById('searchInput').value.toLowerCase().trim();
+            
+            if (!query) {
+                alert('Please enter a search term!');
+                return;
+            }
+
+            // Show loading
+            document.getElementById('loading').classList.add('active');
+            document.getElementById('results').classList.remove('active');
+
+            // Simulate search delay
+            setTimeout(() => {
+                displayResults(query);
+                document.getElementById('loading').classList.remove('active');
+                document.getElementById('results').classList.add('active');
+                
+                // Scroll to results
+                document.getElementById('results').scrollIntoView({ behavior: 'smooth' });
+            }, 2000);
+        }
+
+        function displayResults(query) {
+            const resultsTitle = document.getElementById('resultsTitle');
+            const productsGrid = document.getElementById('productsGrid');
+            
+            // Find matching products
+            let matchedProducts = [];
+            for (let key in products) {
+                if (query.includes(key) || key.includes(query)) {
+                    matchedProducts = products[key];
+                    break;
+                }
+            }
+
+            // If no match, use iPhone as default
+            if (matchedProducts.length === 0) {
+                matchedProducts = products['iphone 15 pro'];
+                resultsTitle.textContent = `Showing results for: iPhone 15 Pro (closest match)`;
+            } else {
+                resultsTitle.textContent = `Results for: ${query}`;
+            }
+
+            // Sort by total price
+            matchedProducts.sort((a, b) => {
+                const totalA = a.price + (a.shipping || 0) + (a.customs || 0);
+                const totalB = b.price + (b.shipping || 0) + (b.customs || 0);
+                return totalA - totalB;
+            });
+
+            // Display products
+            productsGrid.innerHTML = matchedProducts.map((product, index) => {
+                const totalPrice = product.price + (product.shipping || 0) + (product.customs || 0);
+                const isBestDeal = index === 0;
+                const savings = index > 0 ? totalPrice - (matchedProducts[0].price + (matchedProducts[0].shipping || 0) + (matchedProducts[0].customs || 0)) : 0;
+
+                return `
+                    <div class="product-card ${isBestDeal ? 'best-deal' : ''}">
+                        ${isBestDeal ? '<div class="best-deal-badge">✨ Best Deal - Save ₨' + (matchedProducts[1] ? (matchedProducts[1].price + (matchedProducts[1].shipping || 0) + (matchedProducts[1].customs || 0) - totalPrice).toLocaleString() : '0') + '</div>' : ''}
+                        
+                        <div class="product-header">
+                            <div class="product-info">
+                                <h3>${product.name}</h3>
+                                <div class="platform-badge">
+                                    ${getPlatformEmoji(product.platform)} ${product.platform}
+                                </div>
+                                <span class="condition-badge ${product.condition === 'new' ? 'condition-new' : 'condition-used'}">
+                                    ${product.condition === 'new' ? '🆕 BRAND NEW' : '♻️ USED'}
+                                </span>
+                            </div>
+                            <div class="price-section">
+                                <div class="price-main">₨${totalPrice.toLocaleString()}</div>
+                                <div class="price-details">
+                                    Base: ₨${product.price.toLocaleString()}<br>
+                                    ${product.shipping ? `Shipping: ₨${product.shipping.toLocaleString()}<br>` : ''}
+                                    ${product.customs ? `Customs: ₨${product.customs.toLocaleString()}<br>` : ''}
+                                </div>
+                                ${savings > 0 ? `<div class="savings">₨${savings.toLocaleString()} more than best</div>` : ''}
+                            </div>
+                        </div>
+
+                        <div class="product-details">
+                            <div class="detail-item">
+                                <span class="detail-label">Warranty</span>
+                                <span class="detail-value">${product.warranty}</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Delivery</span>
+                                <span class="detail-value">${product.delivery}</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Rating</span>
+                                <span class="detail-value">⭐ ${product.rating}/5</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Stock</span>
+                                <span class="detail-value">${product.stock}</span>
+                            </div>
+                        </div>
+
+                        ${product.condition === 'used' ? `
+                            <div style="background: #fef3c7; padding: 15px; border-radius: 8px; margin: 15px 0;">
+                                <strong>⚠️ Used Item Notice:</strong><br>
+                                <small>• No warranty included<br>• Battery may be degraded<br>• No return policy<br>• Inspect before buying</small>
+                            </div>
+                        ` : ''}
+
+                        ${product.customs ? `
+                            <div style="background: #dbeafe; padding: 15px; border-radius: 8px; margin: 15px 0;">
+                                <strong>💰 Total Cost Calculator:</strong><br>
+                                <small>Product: ₨${product.price.toLocaleString()} + Shipping: ₨${product.shipping.toLocaleString()} + Import Duty: ₨${product.customs.toLocaleString()} = <strong>₨${totalPrice.toLocaleString()}</strong></small>
+                            </div>
+                        ` : ''}
+
+                        <div class="product-actions">
+                            <button class="btn btn-primary" onclick="buyNow('${product.platform}')">
+                                🛒 Buy on ${product.platform}
+                            </button>
+                            <button class="btn btn-secondary" onclick="saveProduct()">
+                                ❤️ Save
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function getPlatformEmoji(platform) {
+            const emojis = {
+                'Daraz': '🛍️',
+                'Amazon': '📦',
+                'OLX': '🏪',
+                'AliExpress': '🌏',
+                'Telemart': '📱'
+            };
+            return emojis[platform] || '🛒';
+        }
+
+        function buyNow(platform) {
+            alert(`🎉 Redirecting to ${platform}...\n\n(In production, this will be your affiliate link and you'll earn commission!)`);
+        }
+
+        function saveProduct() {
+            alert('❤️ Product saved to your wishlist!\n\n(In production, this will save to user account)');
+        }
+
+        // Allow Enter key to search
+        document.getElementById('searchInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                performSearch();
+            }
+        });
+    </script>
+</body>
+</html>
